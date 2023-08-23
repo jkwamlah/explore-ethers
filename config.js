@@ -22,16 +22,15 @@ const wallet9 = Wallet.fromMnemonic(SEED_PHRASE_9)
 
 
 // create our test account from the private key, initialize it with 20 ether
-const accounts = [].concat([{
-    balance: INITIAL_BALANCE.toHexString(),
-    secretKey: PRIVATE_KEY_0,
-}, {
-    balance: INITIAL_BALANCE.toHexString(),
-    secretKey: PRIVATE_KEY_1,
-}, {
-    balance: INITIAL_BALANCE.toHexString(),
-    secretKey: PRIVATE_KEY_2,
-}
+const accounts = [].concat([
+    {balance: INITIAL_BALANCE.toHexString(), secretKey: PRIVATE_KEY_0},
+    {balance: INITIAL_BALANCE.toHexString(), secretKey: PRIVATE_KEY_1},
+    {balance: INITIAL_BALANCE.toHexString(), secretKey: PRIVATE_KEY_2},
+    {balance: INITIAL_BALANCE.toHexString(), secretKey: PRIVATE_KEY_3},
+    {balance: INITIAL_BALANCE.toHexString(), secretKey: PRIVATE_KEY_4},
+    {balance: INITIAL_BALANCE.toHexString(), secretKey: PRIVATE_KEY_5},
+    {balance: INITIAL_BALANCE.toHexString(), secretKey: PRIVATE_KEY_6},
+    {balance: INITIAL_BALANCE.toHexString(), secretKey: PRIVATE_KEY_7},
 ]);
 
 const ganacheProvider = Ganache.provider({accounts});

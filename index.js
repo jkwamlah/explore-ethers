@@ -13,28 +13,59 @@ const wallet5 = new Wallet(PRIVATE_KEY_5, provider);
 const wallet6 = new Wallet(PRIVATE_KEY_6, provider);
 const wallet7 = new Wallet(PRIVATE_KEY_7, provider);
 
+(async () => {
+    console.log("balance wallet0: ", utils.formatEther(await wallet0.getBalance()))
+    console.log("balance wallet1: ", utils.formatEther(await wallet1.getBalance()))
+    console.log("balance wallet2: ", utils.formatEther(await wallet2.getBalance()))
+    console.log("balance wallet3: ", utils.formatEther(await wallet3.getBalance()))
+    console.log("balance wallet4: ", utils.formatEther(await wallet4.getBalance()))
+    console.log("balance wallet5: ", utils.formatEther(await wallet5.getBalance()))
+    console.log("balance wallet6: ", utils.formatEther(await wallet6.getBalance()))
+    console.log("balance wallet7: ", utils.formatEther(await wallet7.getBalance()))
+
+    // Transfer funds from wallet1 to other wallets
+    await payroll(1, wallet1, [
+        wallet2.address,
+        wallet3.address,
+        wallet4.address,
+        wallet5.address,
+        wallet6.address,
+    ]);
+
+    // Transfer funds from wallet2 to other wallets
+    await payroll(2, wallet2, [
+        wallet0.address,
+        wallet4.address,
+        wallet5.address,
+        wallet6.address,
+        wallet7.address,
+    ]);
+
+    console.log("balance after wallet0: ", utils.formatEther(await wallet0.getBalance()))
+    console.log("balance after wallet1: ", utils.formatEther(await wallet1.getBalance()))
+    console.log("balance after wallet2: ", utils.formatEther(await wallet2.getBalance()))
+    console.log("balance after wallet3: ", utils.formatEther(await wallet3.getBalance()))
+    console.log("balance after wallet4: ", utils.formatEther(await wallet4.getBalance()))
+    console.log("balance after wallet5: ", utils.formatEther(await wallet5.getBalance()))
+    console.log("balance after wallet6: ", utils.formatEther(await wallet6.getBalance()))
+    console.log("balance after wallet7: ", utils.formatEther(await wallet7.getBalance()))
+
+    const wallet1Addresses = await findRecipientAddresses(wallet1.address)
+    console.log("addresses for wallet 1: ", wallet1Addresses)
+
+    const wallet2Addresses = await findRecipientAddresses(wallet2.address)
+    console.log("addresses for wallet 2: ", wallet2Addresses)
+})();
+
+
+
 async function payroll(amount, sender, employees) {
     const GAS = 50 // in WEI
-    // check that amount is greater than zero *
-    // check that employees list has atleast one employee *
-    // check that sender has enough balance ?
-    // loop through employees
-    // call send transaction for each employee with the amount
     if(amount <= 0 || employees.length==0) return
     const senderBalance = await sender.getBalance()
     const amountInWei = utils.parseUnits(amount.toString(), 18)
-    // console.log('amountInWei', amountInWei)
-    // parseEther === parseUnit( 18)
+
     if( senderBalance >= ((employees.length * amountInWei) + GAS)) {
-        // challenge: fix the nonce error when the promises "resolve" at the same time
-
-        // await Promise.all(employees.map((employeeAddress) => {
-        //     return sender.sendTransaction({
-        //         value: amountInWei,
-        //         to: employeeAddress,
-        //     })
-        // }))
-
         for(let i=0; i<employees.length; i++) {
             await sender.sendTransaction({
                 value: amountInWei,
@@ -60,25 +91,6 @@ async function findRecipientAddresses(address) {
     }
     return addresses;
 }
-
-(async () => {
-    await wallet1.sendTransaction({value: utils.parseEther("0.1"), to: wallet0.address})
-    await wallet1.sendTransaction({value: utils.parseEther("0.2"), to: wallet1.address})
-    await wallet1.sendTransaction({value: utils.parseEther("0.3"), to: wallet2.address})
-    await wallet1.sendTransaction({value: utils.parseEther("0.4"), to: wallet3.address})
-    await wallet1.sendTransaction({value: utils.parseEther("0.5"), to: wallet4.address})
-
-    await wallet2.sendTransaction({value: utils.parseEther("0.1"), to: wallet5.address})
-    await wallet2.sendTransaction({value: utils.parseEther("0.2"), to: wallet6.address})
-    await wallet2.sendTransaction({value: utils.parseEther("0.3"), to: wallet7.address})
-    await wallet2.sendTransaction({value: utils.parseEther("0.4"), to: wallet8.address})
-    await wallet2.sendTransaction({value: utils.parseEther("0.5"), to: wallet9.address})
-
-
-    const {address} = wallet2
-    const allTransactionAddresses = await findRecipientAddresses(address);
-    console.log(`Wallet Transactions: `, allTransactionAddresses.length ? allTransactionAddresses : ` No transactions found`);
-})();
 
 
 

@@ -1,64 +1,19 @@
-import { ethers } from 'ethers'
-import {PRIVATE_KEY, PRIVATE_KEY_2, PRIVATE_KEY_3, ganacheProvider, wall} from './config.js'
+import {ethers} from 'ethers'
+import {PRIVATE_KEY_0, PRIVATE_KEY_1, PRIVATE_KEY_2, PRIVATE_KEY_3, PRIVATE_KEY_4, PRIVATE_KEY_5, PRIVATE_KEY_6, PRIVATE_KEY_7, wallet8, wallet9, ganacheProvider
+} from './config.js'
 
-const {utils, providers, Wallet } = ethers
-
-
+const {utils, providers, Wallet} = ethers
 const provider = new providers.Web3Provider(ganacheProvider)
-
-const wallet1 = new Wallet(PRIVATE_KEY, provider);
+const wallet0 = new Wallet(PRIVATE_KEY_0, provider);
+const wallet1 = new Wallet(PRIVATE_KEY_1, provider);
 const wallet2 = new Wallet(PRIVATE_KEY_2, provider);
 const wallet3 = new Wallet(PRIVATE_KEY_3, provider);
+const wallet4 = new Wallet(PRIVATE_KEY_4, provider);
+const wallet5 = new Wallet(PRIVATE_KEY_5, provider);
+const wallet6 = new Wallet(PRIVATE_KEY_6, provider);
+const wallet7 = new Wallet(PRIVATE_KEY_7, provider);
 
-(async () => {
-    console.log("balance wallet1: ", utils.formatEther(await wallet1.getBalance()))
-    console.log("balance wallet2: ", utils.formatEther(await wallet2.getBalance()))
-    console.log("balance wallet3: ", utils.formatEther(await wallet3.getBalance()))
-
-
-    // const tx0 = await wallet1.sendTransaction({
-    //     value: utils.parseEther(".5"),
-    //     to: wallet2.address,
-    // })
-    // const tx1 = await wallet1.sendTransaction({
-    //     value: utils.parseEther(".5"),
-    //     to: wallet2.address,
-    // })
-
-    
-    // const tx2 = await wallet1.sendTransaction({
-    //     value: utils.parseEther("5"),
-    //     to: wallet2.address,
-    // })
-
-    await payroll(0.3, wallet1, [
-        wallet2.address,
-        wallet3.address,
-    ]);
-
-    console.log("after balance wallet1: ", utils.formatEther(await wallet1.getBalance()))
-    console.log("after balance wallet2: ", utils.formatEther(await wallet2.getBalance()))
-    console.log("after balance wallet3: ", utils.formatEther(await wallet3.getBalance()))
-})();
-
-// TODO
-/*
-- send a transaction *
-- inspect the transaction *
-- send multiple transactions *
-- inspect the nonce *
-- inspect the wallet balances *
-
-exercise
-- send to multiple addresses at once *
-- inspect the state of each wallet *
-- process all amounts in WEI *
-
-assignment
-- find all addresses that have received ether from a specified address
-*/
-
-async function  payroll(amount, sender, employees) {
+async function payroll(amount, sender, employees) {
     const GAS = 50 // in WEI
     // check that amount is greater than zero *
     // check that employees list has atleast one employee *
@@ -82,18 +37,57 @@ async function  payroll(amount, sender, employees) {
 
         for(let i=0; i<employees.length; i++) {
             await sender.sendTransaction({
-                    value: amountInWei,
-                    to: employees[i],
-                })
-        } 
+                value: amountInWei,
+                to: employees[i],
+            })
+        }
     } else {
         console.log('it didnt work...')
-    } 
+    }
 }
 
+async function findRecipientAddresses(address) {
+    const latestBlockNumber = await provider.getBlockNumber();
+    const addresses = [];
 
-// function findAddresses(address) return list of addresses
-// provider.getBlockNumber()
-// provider.getBlockWithTransactions(integer) returns an array of transactions
+    for (let blockNumber = 0; blockNumber <= latestBlockNumber; blockNumber++) {
+        const block = await provider.getBlockWithTransactions(blockNumber);
 
-// test with at least 5 addresses
+        const filteredTransactionAddress = block.transactions.filter(
+            transaction => transaction.from === address
+        );
+        addresses.push(...filteredTransactionAddress.map(transaction => transaction.to));
+    }
+    return addresses;
+}
+
+(async () => {
+    await wallet1.sendTransaction({value: utils.parseEther("0.1"), to: wallet0.address})
+    await wallet1.sendTransaction({value: utils.parseEther("0.2"), to: wallet1.address})
+    await wallet1.sendTransaction({value: utils.parseEther("0.3"), to: wallet2.address})
+    await wallet1.sendTransaction({value: utils.parseEther("0.4"), to: wallet3.address})
+    await wallet1.sendTransaction({value: utils.parseEther("0.5"), to: wallet4.address})
+
+    await wallet2.sendTransaction({value: utils.parseEther("0.1"), to: wallet5.address})
+    await wallet2.sendTransaction({value: utils.parseEther("0.2"), to: wallet6.address})
+    await wallet2.sendTransaction({value: utils.parseEther("0.3"), to: wallet7.address})
+    await wallet2.sendTransaction({value: utils.parseEther("0.4"), to: wallet8.address})
+    await wallet2.sendTransaction({value: utils.parseEther("0.5"), to: wallet9.address})
+
+
+    const {address} = wallet2
+    const allTransactionAddresses = await findRecipientAddresses(address);
+    console.log(`Wallet Transactions: `, allTransactionAddresses.length ? allTransactionAddresses : ` No transactions found`);
+})();
+
+
+
+
+
+
+
+
+
+
+
+
